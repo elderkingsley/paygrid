@@ -20,7 +20,31 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path></svg>
                     </span>
                 </div>
-                <div class="text-xl font-bold text-slate-800">Assigning Account...</div>
+
+                {{-- Logical Check: Does the org have an account number? --}}
+                @if($organization && $organization->virtual_account_number)
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2 group">
+                            <div class="text-xl font-black text-slate-900 tracking-tighter">
+                                {{ $organization->virtual_account_number }}
+                            </div>
+                            {{-- Copy to Clipboard feature --}}
+                            <button onclick="navigator.clipboard.writeText('{{ $organization->virtual_account_number }}')" class="p-1 hover:bg-slate-100 rounded text-slate-400 transition" title="Copy">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
+                            </button>
+                        </div>
+                        <div class="text-[10px] font-black text-blue-600 uppercase tracking-widest">
+                            {{ $organization->virtual_bank_name ?? 'Wema Bank' }}
+                        </div>
+                    </div>
+                @else
+                    <div class="space-y-2">
+                        <div class="text-lg font-bold text-slate-400 italic">Not Activated</div>
+                        <a href="{{ route('settings.treasury') }}" class="text-[10px] bg-slate-900 text-white px-3 py-1 rounded-full font-black uppercase inline-block">
+                            Setup Now &rarr;
+                        </a>
+                    </div>
+                @endif
             </div>
 
             {{-- Monthly Spend Card --}}
