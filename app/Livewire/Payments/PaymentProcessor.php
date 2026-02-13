@@ -85,6 +85,20 @@ class PaymentProcessor extends Component
 
     public function render()
     {
-        return view('livewire.payments.payment-processor')->layout('layouts.app');
+        $organization = Auth::user()->organization;
+
+        return view('livewire.payments.wallet-card', [
+            // Pull the actual balance from the database column we just updated
+            'balance' => $organization->wallet_balance,
+
+            // Pull the latest 10 transactions
+            'transactions' => $organization->transactions()
+                ->latest()
+                ->take(10)
+                ->get(),
+
+            'accountNumber' => $organization->paystack_account_number,
+            'bankName' => $organization->paystack_bank_name,
+        ]);
     }
 }

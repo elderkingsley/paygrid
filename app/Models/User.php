@@ -25,6 +25,7 @@ class User extends Authenticatable
         'email',
         'password',
         'organization_id',
+        'password_set_at',
     ];
 
     // Optional: Add a helper to get the full name easily in the UI
@@ -58,5 +59,10 @@ class User extends Authenticatable
     public function organization()
     {
         return $this->belongsTo(Organization::class);
+    }
+
+    public function getStoredPermissionId()
+    {
+        return $this->organization_id;
     }
 }

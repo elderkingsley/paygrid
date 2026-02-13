@@ -1,68 +1,64 @@
 <x-app-layout>
-    <div class="space-y-6">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-            {{-- Balance Card --}}
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                <div class="flex items-center justify-between mb-4">
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Available Balance</span>
-                    <span class="p-2 bg-blue-50 text-blue-600 rounded-lg">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    </span>
+    <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+            {{-- Left Column: Treasury Overview --}}
+            <div class="lg:col-span-4 space-y-6">
+                <h3 class="text-lg font-black text-slate-800 tracking-tight ml-2">Main Treasury</h3>
+
+                @livewire('organization.wallet-card')
+
+                <div class="bg-blue-600 rounded-3xl p-6 text-white shadow-lg shadow-blue-200">
+                    <p class="text-[10px] font-bold uppercase opacity-70 text-blue-100">Total Monthly Outflow</p>
+                    <p class="text-2xl font-black">₦{{ number_format($totalSpent ?? 0, 2) }}</p>
                 </div>
-                <div class="text-3xl font-black text-slate-900">₦0.00</div>
             </div>
 
-            {{-- Account Number Card --}}
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                <div class="flex items-center justify-between mb-4">
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Virtual Account</span>
-                    <span class="p-2 bg-green-50 text-green-600 rounded-lg">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path></svg>
-                    </span>
+            {{-- Right Column: Actions & Workflow --}}
+            <div class="lg:col-span-8 space-y-10">
+
+                {{-- Request Section: Visible to Requesters & Admins --}}
+                @role(['requester', 'admin'])
+                    <section>
+                        <h3 class="text-lg font-black text-slate-800 tracking-tight ml-2 mb-4">Request Funds</h3>
+                        @livewire('organization.expense-logger')
+                    </section>
+                @endrole
+
+                {{-- Approval & Disbursement Workflow --}}
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                    {{-- Approver View --}}
+                    @role(['approver', 'admin'])
+                        <section>
+                            <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2 mb-3">Pending Approvals</h3>
+                            @livewire('organization.approval-inbox')
+                        </section>
+                    @endrole
+
+                    {{-- Disburser View --}}
+                    @role(['disburser', 'admin'])
+                        <section>
+                            <h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest ml-2 mb-3">Disbursement Queue</h3>
+                            @livewire('organization.disbursement-queue')
+                        </section>
+                    @endrole
                 </div>
 
-                {{-- Logical Check: Does the org have an account number? --}}
-                @if($organization && $organization->virtual_account_number)
-                    <div class="space-y-1">
-                        <div class="flex items-center gap-2 group">
-                            <div class="text-xl font-black text-slate-900 tracking-tighter">
-                                {{ $organization->virtual_account_number }}
-                            </div>
-                            {{-- Copy to Clipboard feature --}}
-                            <button onclick="navigator.clipboard.writeText('{{ $organization->virtual_account_number }}')" class="p-1 hover:bg-slate-100 rounded text-slate-400 transition" title="Copy">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
-                            </button>
-                        </div>
-                        <div class="text-[10px] font-black text-blue-600 uppercase tracking-widest">
-                            {{ $organization->virtual_bank_name ?? 'Wema Bank' }}
-                        </div>
-                    </div>
-                @else
-                    <div class="space-y-2">
-                        <div class="text-lg font-bold text-slate-400 italic">Not Activated</div>
-                        <a href="{{ route('settings.treasury') }}" class="text-[10px] bg-slate-900 text-white px-3 py-1 rounded-full font-black uppercase inline-block">
-                            Setup Now &rarr;
-                        </a>
-                    </div>
-                @endif
-            </div>
-
-            {{-- Monthly Spend Card --}}
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 sm:col-span-2 lg:col-span-1">
-                <div class="flex items-center justify-between mb-4">
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">January Outflow</span>
-                    <span class="p-2 bg-orange-50 text-orange-600 rounded-lg text-xs font-bold">↑ 12%</span>
-                </div>
-                <div class="text-3xl font-black text-slate-900">₦{{ number_format($totalSpent ?? 0, 2) }}</div>
+                {{-- Budget Management (Keep here or move to sidebar as well) --}}
+                @role('admin')
+                    <hr class="border-slate-100">
+                    <section>
+                        <h3 class="text-lg font-black text-slate-800 tracking-tight ml-2 mb-4">Budget Overview</h3>
+                        @livewire('organization.budget-manager')
+                    </section>
+                @endrole
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-             <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-                 <h2 class="font-bold text-slate-800">Recent Transactions</h2>
-                 {{-- We will eventually put the "Create Expense" button here --}}
-             </div>
-             <livewire:expenses.expense-list />
+        {{-- Footer Section: History --}}
+        <div class="mt-12 border-t border-slate-100 pt-10">
+            <h3 class="text-lg font-black text-slate-800 tracking-tight ml-2 mb-6">Activity History</h3>
+            @livewire('organization.expense-history')
         </div>
     </div>
 </x-app-layout>

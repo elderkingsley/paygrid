@@ -73,15 +73,47 @@
             </button>
 
             <div class="flex flex-1 justify-end items-center gap-x-4">
-                <div class="text-right hidden sm:block">
-                    <div class="text-sm font-bold text-slate-900 leading-none">{{ Auth::user()->name }}</div>
-                    <div class="text-[10px] font-bold text-blue-600 uppercase tracking-tight mt-1">
-                        {{ Auth::user()->organization->name ?? 'Personal Account' }}
-                    </div>
-                </div>
-                <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-blue-700 to-blue-500 flex items-center justify-center text-white font-black text-sm shadow-md">
-                    {{ substr(Auth::user()->name, 0, 1) }}
-                </div>
+                <x-dropdown align="right" width="48">
+                    <x-slot name="trigger">
+                        <button class="flex items-center gap-x-3 focus:outline-none group">
+                            <div class="text-right hidden sm:block">
+                                <div class="text-sm font-bold text-slate-900 leading-none group-hover:text-blue-600 transition">
+                                    {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
+                                </div>
+                                <div class="text-[10px] font-bold text-blue-600 uppercase tracking-tight mt-1">
+                                    {{ Auth::user()->organization->name ?? 'Personal Account' }}
+                                </div>
+                            </div>
+                            <div class="h-10 w-10 rounded-xl bg-gradient-to-tr from-blue-700 to-blue-500 flex items-center justify-center text-white font-black text-sm shadow-md group-hover:shadow-lg group-hover:scale-105 transition duration-200">
+                                {{ substr(Auth::user()->first_name, 0, 1) }}{{ substr(Auth::user()->last_name, 0, 1) }}
+                            </div>
+                        </button>
+                    </x-slot>
+
+                    <x-slot name="content">
+                        <div class="block px-4 py-2 text-[10px] text-slate-400 font-black uppercase tracking-widest border-b border-slate-50">
+                            Account Settings
+                        </div>
+
+                        <x-dropdown-link :href="route('profile')" wire:navigate>
+                            {{ __('View Profile') }}
+                        </x-dropdown-link>
+
+                        <hr class="border-slate-100">
+
+                        <div class="border-t border-slate-100 mt-1">
+                            <form method="POST" action="/logout" id="logout-form" class="hidden">
+                                @csrf
+                            </form>
+
+                            <x-dropdown-link href="/logout"
+                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                                class="text-red-600 font-bold hover:bg-red-50 cursor-pointer">
+                                {{ __('Log Out') }}
+                            </x-dropdown-link>
+                        </div>
+                    </x-slot>
+                </x-dropdown>
             </div>
         </header>
 
@@ -92,7 +124,20 @@
 
     <livewire:expenses.master-expense-modal />
     @livewire('expenses.create-category-modal')
+    {{-- Near the bottom of the body --}}
+    <livewire:admin.user-modal />
 
     @livewireScripts
+    <script>
+    window.addEventListener('swal:modal', event => {
+        Swal.fire({
+            title: event.detail[0].title,
+            text: event.detail[0].text,
+            icon: event.detail[0].type,
+            confirmButtonColor: '#0f172a', // Matches your slate-900
+            borderRadius: '2rem'
+        });
+    });
+</script>
 </body>
 </html>

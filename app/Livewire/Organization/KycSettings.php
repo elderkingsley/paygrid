@@ -52,8 +52,8 @@ class KycSettings extends Component
                     'last_name' => 'Organization', // Tagging it as Org
                     'phone' => $this->phone,
                     'metadata' => [
-                        'cac_number' => $this->cac_number,
-                        'organization_id' => $org->id
+                    'cac_number' => $this->cac_number,
+                    'organization_id' => $org->id
                     ]
                 ]);
 
@@ -80,6 +80,7 @@ class KycSettings extends Component
             $data = $accountResponse->json()['data'];
 
             $org->update([
+                'paystack_customer_code' => $customerCode, // <--- THIS WAS LIKELY MISSING
                 'virtual_account_number' => $data['account_number'], // Ensure this key is correct
                 'virtual_bank_name'      => $data['bank']['name'],   // It's usually nested in 'bank'
                 'virtual_account_name'   => $data['account_name'],

@@ -1,0 +1,17 @@
+[90m= [39m[34;4mApp\Models\Organization[39;24m {#6412
+    [34mid[39m: "[32ma10b1b1b-3625-4924-b8fb-279db0ca4b25[39m",
+    [34mname[39m: "[32mPaygrid Expenses Limited[39m",
+    [34mslug[39m: "[32mpaygrid-expenses-limited[39m",
+    [34mpaystack_customer_code[39m: "[32mCUS_4nol7k83p1zfb0y[39m",
+    [34mnuban[39m: [36mnull[39m,
+    [34mcreated_at[39m: "[32m2026-02-10 02:31:54[39m",
+    [34mupdated_at[39m: "[32m2026-02-10 06:58:02[39m",
+    [34mvirtual_account_number[39m: "[32m9329359787[39m",
+    [34mvirtual_bank_name[39m: "[32mWema Bank[39m",
+    [34mcac_number[39m: [36mnull[39m,
+    [34mtin_number[39m: [36mnull[39m,
+    [34mkyc_verified[39m: [36mtrue[39m,
+    [34mvirtual_account_name[39m: "[32mBLACKFIREBARB/ORGANIZATION PAYGRID EXPENSES LIMITED[39m",
+    [34mwallet_balance[39m: "[32m0.00[39m",
+  }
+
